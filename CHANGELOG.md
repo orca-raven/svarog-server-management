@@ -5,6 +5,18 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 и этот проект придерживается [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2025-10-05
+
+### Исправлено
+- Исправлена установка на macOS: изменен путь с `/usr/local/svarog` на `/opt/svarog`
+- Исправлены права доступа на macOS: используется группа `wheel` вместо пользовательской группы
+- Обновлены пути к логам: `/opt/svarog/logs/` вместо `/usr/local/var/log/`
+- Добавлен подробный гид по установке на macOS (`MACOS_INSTALL_GUIDE.md`)
+
+### Улучшено
+- Более стабильная работа автоустановщика на macOS
+- Соответствие стандартам безопасности macOS (System Integrity Protection)
+
 ## [1.0.6] - 2025-10-05
 
 ### Откат изменений

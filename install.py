@@ -26,7 +26,7 @@ class SvarogInstaller:
         if self.system == "linux":
             self.install_dir = "/opt/svarog"
         elif self.system == "macos":
-            self.install_dir = "/usr/local/svarog"
+            self.install_dir = "/opt/svarog"  # Изменено с /usr/local/svarog на /opt/svarog
         else:
             self.install_dir = "C:\\Program Files\\Svarog"
             
@@ -197,8 +197,16 @@ class SvarogInstaller:
             if self.system in ["linux", "macos"]:
                 subprocess.run(['sudo', 'mkdir', '-p', self.install_dir], check=True)
                 subprocess.run(['sudo', 'cp', '-r', f"{source_dir}/.", self.install_dir], check=True)
-                subprocess.run(['sudo', 'chown', '-R', f"{os.getenv('USER')}:{os.getenv('USER')}", 
-                              self.install_dir], check=True)
+                
+                # Устанавливаем правильные права в зависимости от ОС
+                if self.system == "macos":
+                    # На macOS используем wheel группу
+                    subprocess.run(['sudo', 'chown', '-R', f"{os.getenv('USER')}:wheel", 
+                                  self.install_dir], check=True)
+                else:
+                    # На Linux используем пользователя
+                    subprocess.run(['sudo', 'chown', '-R', f"{os.getenv('USER')}:{os.getenv('USER')}", 
+                                  self.install_dir], check=True)
             else:
                 os.makedirs(self.install_dir, exist_ok=True)
                 shutil.copytree(source_dir, self.install_dir, dirs_exist_ok=True)
@@ -358,9 +366,9 @@ WantedBy=multi-user.target
     <key>KeepAlive</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>/usr/local/var/log/svarog.log</string>
+    <string>/opt/svarog/logs/svarog.log</string>
     <key>StandardErrorPath</key>
-    <string>/usr/local/var/log/svarog.error.log</string>
+    <string>/opt/svarog/logs/svarog.error.log</string>
 </dict>
 </plist>
 """
@@ -368,8 +376,8 @@ WantedBy=multi-user.target
         plist_path = f"/Library/LaunchDaemons/com.svarog.server.plist"
         
         try:
-            # Создаем директорию для логов
-            subprocess.run(['sudo', 'mkdir', '-p', '/usr/local/var/log'], check=True)
+            # Создаем директорию для логов (используем /opt вместо /usr/local)
+            subprocess.run(['sudo', 'mkdir', '-p', '/opt/svarog/logs'], check=True)
             
             # Создаем plist файл
             with open('/tmp/svarog.plist', 'w') as f:
@@ -451,14 +459,14 @@ WantedBy=multi-user.target
                 self.log("Последние логи службы:")
                 # Показываем логи из файлов
                 try:
-                    with open('/usr/local/var/log/svarog.log', 'r') as f:
+                    with open('/opt/svarog/logs/svarog.log', 'r') as f:
                         lines = f.readlines()
                         print(''.join(lines[-20:]))  # Последние 20 строк
                 except FileNotFoundError:
                     pass
                     
                 try:
-                    with open('/usr/local/var/log/svarog.error.log', 'r') as f:
+                    with open('/opt/svarog/logs/svarog.error.log', 'r') as f:
                         lines = f.readlines()
                         print(''.join(lines[-20:]))  # Последние 20 строк
                 except FileNotFoundError:
@@ -570,8 +578,8 @@ WantedBy=multi-user.target
             self.log(f"   sudo launchctl unload /Library/LaunchDaemons/com.svarog.server.plist", "SUCCESS")
             self.log(f"   sudo launchctl load /Library/LaunchDaemons/com.svarog.server.plist", "SUCCESS")
             self.log(f"📋 Логи службы:", "SUCCESS")
-            self.log(f"   tail -f /usr/local/var/log/svarog.log", "SUCCESS")
-            self.log(f"   tail -f /usr/local/var/log/svarog.error.log", "SUCCESS")
+            self.log(f"   tail -f /opt/svarog/logs/svarog.log", "SUCCESS")
+            self.log(f"   tail -f /opt/svarog/logs/svarog.error.log", "SUCCESS")
             
         self.log("", "SUCCESS")
         self.log("Система готова к использованию! 🚀", "SUCCESS")
