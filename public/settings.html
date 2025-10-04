@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки - Server Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Заголовок -->
+        <header class="header">
+            <div class="header-content">
+                <button class="btn-icon" onclick="window.location.href='/'">
+                    <i class="material-icons">arrow_back</i>
+                </button>
+                <h1 class="app-title">Настройки системы</h1>
+            </div>
+        </header>
+
+        <!-- Основной контент -->
+        <main class="main-content">
+            <div class="settings-container">
+                <!-- Статистика компонентов -->
+                <div class="settings-section">
+                    <h2>Статистика компонентов</h2>
+                    <div class="stats-grid" id="components-stats">
+                        <!-- Статистика загружается динамически -->
+                    </div>
+                </div>
+
+                <!-- Экспорт/Импорт -->
+                <div class="settings-section">
+                    <h2>Экспорт/Импорт данных</h2>
+                    <div class="settings-row">
+                        <label>Экспорт данных:</label>
+                        <div class="export-buttons">
+                            <button class="btn-secondary" onclick="exportData('servers')">Только серверы</button>
+                            <button class="btn-secondary" onclick="exportData('arms')">Только АРМ</button>
+                            <button class="btn-secondary" onclick="exportData('all')">Всё</button>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <label for="import-file">Импорт из Excel:</label>
+                        <div class="import-section">
+                            <input type="file" id="import-file" accept=".xlsx,.xls" />
+                            <button class="btn-primary" onclick="importData()">Импортировать</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Настройки Ping -->
+                <div class="settings-section">
+                    <h2>Настройки проверки доступности</h2>
+                    <div class="settings-row">
+                        <label>
+                            <input type="checkbox" id="ping-enabled" />
+                            Включить автоматическую проверку
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <label for="ping-interval">Интервал проверки (минуты):</label>
+                        <input type="number" id="ping-interval" min="1" max="1440" value="60" />
+                    </div>
+                    <div class="settings-row">
+                        <label for="ping-timeout">Таймаут (секунды):</label>
+                        <input type="number" id="ping-timeout" min="1" max="60" value="10" />
+                    </div>
+                    <button class="btn-primary" onclick="savePingSettings()">Сохранить настройки</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Модальное окно компонента -->
+    <div class="modal" id="component-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="component-modal-title">Оборудование с компонентом</h2>
+                <button class="btn-icon" id="close-component-modal">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-container">
+                    <table id="component-equipment-table">
+                        <thead>
+                            <tr>
+                                <th>Тип</th>
+                                <th>Имя NETBIOS</th>
+                                <th>IP адрес</th>
+                                <th>Адрес установки</th>
+                            </tr>
+                        </thead>
+                        <tbody id="component-equipment-list">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+</html>

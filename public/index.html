@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Заголовок -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="app-title">Server Management</h1>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Количество серверов</span>
+                        <span class="stat-value" id="servers-count">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Количество АРМ</span>
+                        <span class="stat-value" id="arms-count">0</span>
+                    </div>
+                </div>
+                <button class="settings-btn" onclick="window.location.href='/settings.html'">
+                    <i class="material-icons">settings</i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Основной контент -->
+        <main class="main-content">
+            <!-- Вкладки -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="servers">Серверы</button>
+                    <button class="tab-button" data-tab="arms">АРМ</button>
+                    <button class="tab-button" data-tab="vms">Виртуальные машины</button>
+                </div>
+                <button class="add-btn" id="add-btn">
+                    <i class="material-icons">add</i>
+                    Добавить
+                </button>
+            </div>
+
+            <!-- Содержимое вкладок -->
+            <div class="tab-content active" id="servers-tab">
+                <div class="table-container">
+                    <table class="data-table" id="servers-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="netbios_name">Имя NETBIOS</th>
+                                <th data-sort="type">Тип</th>
+                                <th data-sort="ip_address">IP адрес</th>
+                                <th data-sort="role">Роль</th>
+                                <th data-sort="operating_system">ОС</th>
+                                <th data-sort="ping_status">Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody id="servers-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-content" id="arms-tab">
+                <div class="table-container">
+                    <table class="data-table" id="arms-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="netbios_name">Имя NETBIOS</th>
+                                <th data-sort="type">Тип</th>
+                                <th data-sort="ip_address">IP адрес</th>
+                                <th data-sort="role">Роль</th>
+                                <th data-sort="operating_system">ОС</th>
+                                <th data-sort="ping_status">Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody id="arms-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-content" id="vms-tab">
+                <div class="table-container">
+                    <table class="data-table" id="vms-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="vm_name">Имя ВМ</th>
+                                <th data-sort="netbios_name">Имя NETBIOS</th>
+                                <th data-sort="ip_address">IP адрес</th>
+                                <th data-sort="server_name">Виртуальный сервер</th>
+                                <th data-sort="allocated_cpu">CPU</th>
+                                <th data-sort="allocated_ram">RAM</th>
+                                <th data-sort="ping_status">Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vms-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Модальное окно для просмотра/редактирования -->
+    <div class="modal" id="detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Информация о сервере</h2>
+                <div class="modal-actions">
+                    <button class="btn-danger" id="delete-btn" style="display: none;">Удалить</button>
+                    <button class="btn-secondary" id="edit-btn">Редактировать</button>
+                    <button class="btn-icon" id="close-modal">
+                        <i class="material-icons">close</i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Содержимое будет загружено динамически -->
+            </div>
+            <div class="modal-footer" id="modal-footer" style="display: none;">
+                <button class="btn-secondary" id="cancel-btn">Отмена</button>
+                <button class="btn-primary" id="save-btn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно компонента -->
+    <div class="modal" id="component-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="component-modal-title">Оборудование с компонентом</h2>
+                <button class="btn-icon" id="close-component-modal">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-container">
+                    <table class="data-table" id="component-equipment-table">
+                        <thead>
+                            <tr>
+                                <th>Тип</th>
+                                <th>Имя</th>
+                                <th>IP адрес</th>
+                                <th>Адрес установки</th>
+                            </tr>
+                        </thead>
+                        <tbody id="component-equipment-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
