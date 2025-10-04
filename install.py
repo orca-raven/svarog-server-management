@@ -241,7 +241,7 @@ class SvarogInstaller:
         
         service_content = f"""[Unit]
 Description=Svarog Server Management System
-Documentation=https://github.com/{self.github_repo}
+Documentation=https://github.com/renezinger/svarog-server-management
 After=network.target
 
 [Service]
