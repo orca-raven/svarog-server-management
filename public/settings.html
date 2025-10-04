@@ -68,27 +68,6 @@
                         <label for="ping-timeout">Таймаут (секунды):</label>
                         <input type="number" id="ping-timeout" min="1" max="60" value="10" />
                     </div>
-                    <div class="settings-row">
-                        <button class="btn-primary" onclick="savePingSettings()">Сохранить настройки Ping</button>
-                    </div>
-                </div>
-
-                <!-- Настройки API -->
-                <div class="settings-section">
-                    <h2>Настройки безопасности API</h2>
-                    <div class="settings-row">
-                        <label>
-                            <input type="checkbox" id="api-enabled" />
-                            Включить внешний API доступ
-                        </label>
-                        <small style="color: #888; display: block; margin-top: 5px;">
-                            ⚠️ Отключение API повышает безопасность системы, но делает недоступными внешние интеграции
-                        </small>
-                    </div>
-                    <div class="settings-row">
-                        <button class="btn-primary" onclick="saveApiSettings()">Сохранить настройки API</button>
-                    </div>
-                </div>
                     <button class="btn-primary" onclick="savePingSettings()">Сохранить настройки</button>
                 </div>
             </div>

@@ -169,9 +169,7 @@ db.serialize(() => {
     db.run(`INSERT OR IGNORE INTO settings (setting_key, setting_value, description) VALUES 
             ('ping_enabled', '1', 'Глобальное включение/выключение ping'),
             ('ping_interval', '60', 'Интервал ping в минутах'),
-            ('ping_timeout', '10', 'Таймаут ping в секундах'),
-            ('api_enabled', '0', 'Включение/выключение внешнего API доступа'),
-            ('api_description', 'Отключение API повышает безопасность системы', 'Описание настройки API')`);
+            ('ping_timeout', '10', 'Таймаут ping в секундах')`);
 
     console.log('База данных создана успешно!');
 });

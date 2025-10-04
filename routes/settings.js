@@ -9,38 +9,6 @@ module.exports = (db) => {
     // Настройка multer для загрузки файлов
     const upload = multer({ dest: 'uploads/' });
 
-    // Специальный маршрут для управления API (всегда доступен)
-    router.get('/api-settings', (req, res) => {
-        db.get('SELECT setting_value FROM settings WHERE setting_key = ?', ['api_enabled'], (err, row) => {
-            if (err) {
-                res.status(500).json({ error: err.message });
-                return;
-            }
-            
-            const apiEnabled = row ? row.setting_value === '1' : false;
-            res.json({ api_enabled: apiEnabled });
-        });
-    });
-
-    router.put('/api-settings', (req, res) => {
-        const { api_enabled } = req.body;
-        const value = api_enabled ? '1' : '0';
-        
-        db.run('UPDATE settings SET setting_value = ?, updated_at = CURRENT_TIMESTAMP WHERE setting_key = ?', 
-               [value, 'api_enabled'], (err) => {
-            if (err) {
-                res.status(500).json({ error: err.message });
-                return;
-            }
-            
-            res.json({ 
-                success: true, 
-                api_enabled: api_enabled,
-                message: api_enabled ? 'API доступ включен' : 'API доступ отключен'
-            });
-        });
-    });
-
     // Получить статистику
     router.get('/stats', (req, res) => {
         const serverCountSql = `SELECT COUNT(*) as count FROM servers WHERE type != 'сервер виртуализации'`;

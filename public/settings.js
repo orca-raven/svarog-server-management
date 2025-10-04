@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeSettings() {
     loadComponentsStats();
     loadPingSettings();
-    loadApiSettings();
     setupEventListeners();
 }
 
@@ -278,55 +277,6 @@ async function savePingSettings() {
         }
     } catch (error) {
         console.error('Ошибка сохранения настроек:', error);
-        showNotification('Ошибка сети: ' + error.message, 'error');
-    }
-}
-
-// Загрузка настроек API
-async function loadApiSettings() {
-    try {
-        const response = await fetch('/api/settings/api-settings');
-        const result = await response.json();
-        
-        if (response.ok) {
-            document.getElementById('api-enabled').checked = result.api_enabled;
-        } else {
-            console.error('Ошибка загрузки настроек API:', result.error);
-        }
-    } catch (error) {
-        console.error('Ошибка загрузки настроек API:', error);
-    }
-}
-
-// Сохранение настроек API
-async function saveApiSettings() {
-    const apiEnabled = document.getElementById('api-enabled').checked;
-    
-    try {
-        const response = await fetch('/api/settings/api-settings', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                api_enabled: apiEnabled
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-            showNotification(result.message, 'success');
-            
-            // Если API был отключен, предупреждаем пользователя
-            if (!apiEnabled) {
-                showNotification('⚠️ Внешний API доступ отключен. Это повышает безопасность системы.', 'warning');
-            }
-        } else {
-            showNotification('Ошибка сохранения: ' + result.error, 'error');
-        }
-    } catch (error) {
-        console.error('Ошибка сохранения настроек API:', error);
         showNotification('Ошибка сети: ' + error.message, 'error');
     }
 }
