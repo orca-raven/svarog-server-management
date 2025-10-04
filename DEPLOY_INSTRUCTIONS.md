@@ -20,10 +20,7 @@
 # Перейдите в папку проекта
 cd c:\vscodeproj\serverstat_co
 
-# Обновите URL репозитория на правильный
-git remote set-url origin https://github.com/orca-raven/svarog-server-management.git
-
-# Загрузите код на GitHub
+# URL уже настроен правильно, просто загружаем код
 git push -u origin master
 ```
 
