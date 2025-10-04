@@ -23,6 +23,41 @@ const db = new sqlite3.Database('./database.db', (err) => {
     }
 });
 
+// Middleware для проверки API доступа
+const checkApiAccess = (req, res, next) => {
+    // Разрешаем доступ к статическим файлам
+    if (!req.path.startsWith('/api/')) {
+        return next();
+    }
+
+    // Разрешаем доступ к настройкам API (всегда доступны)
+    if (req.path.startsWith('/api/settings/api-settings')) {
+        return next();
+    }
+
+    // Проверяем настройку API для остальных маршрутов
+    db.get('SELECT setting_value FROM settings WHERE setting_key = ?', ['api_enabled'], (err, row) => {
+        if (err) {
+            console.error('Ошибка проверки настроек API:', err);
+            return res.status(500).json({ error: 'Ошибка сервера' });
+        }
+
+        const apiEnabled = row && row.setting_value === '1';
+        
+        if (!apiEnabled) {
+            return res.status(403).json({ 
+                error: 'API доступ отключен', 
+                message: 'Внешний API доступ отключен в настройках системы для повышения безопасности' 
+            });
+        }
+
+        next();
+    });
+};
+
+// Применяем middleware для проверки API
+app.use(checkApiAccess);
+
 // Маршруты
 const serversRouter = require('./routes/servers')(db);
 const armsRouter = require('./routes/arms')(db);
