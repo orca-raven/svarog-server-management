@@ -5,7 +5,7 @@
 ### Шаг 1: Создание репозитория на GitHub
 
 1. **Откройте https://github.com** в браузере
-2. **Войдите в свой аккаунт** (renezinger)
+2. **Войдите в свой аккаунт** (orca-raven)
 3. **Нажмите зеленую кнопку "New"** или перейдите на https://github.com/new
 4. **Заполните форму:**
    - Repository name: `svarog-server-management`
@@ -21,7 +21,7 @@
 cd c:\vscodeproj\serverstat_co
 
 # Обновите URL репозитория на правильный
-git remote set-url origin https://github.com/renezinger/svarog-server-management.git
+git remote set-url origin https://github.com/orca-raven/svarog-server-management.git
 
 # Загрузите код на GitHub
 git push -u origin master
@@ -30,7 +30,7 @@ git push -u origin master
 ### Шаг 3: Проверка загрузки
 
 После выполнения команд:
-1. Откройте https://github.com/renezinger/svarog-server-management
+1. Откройте https://github.com/orca-raven/svarog-server-management
 2. Убедитесь, что все файлы загружены
 3. Проверьте, что README.md отображается корректно
 
@@ -65,7 +65,7 @@ git push -u origin master
 После загрузки на GitHub, система может быть установлена на любом Linux сервере командой:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/renezinger/svarog-server-management/main/install.py | python3
+curl -sSL https://raw.githubusercontent.com/orca-raven/svarog-server-management/main/install.py | python3
 ```
 
 ### Что делает установщик:

@@ -22,7 +22,7 @@ class SvarogInstaller:
         self.install_dir = "/opt/svarog" if self.system == "linux" else "C:\\Program Files\\Svarog"
         self.service_name = "svarog-server"
         self.port = None
-        self.github_repo = "renezinger/svarog-server-management"
+        self.github_repo = "orca-raven/svarog-server-management"
         self.branch = "main"
         
     def log(self, message, level="INFO"):
@@ -241,7 +241,7 @@ class SvarogInstaller:
         
         service_content = f"""[Unit]
 Description=Svarog Server Management System
-Documentation=https://github.com/renezinger/svarog-server-management
+Documentation=https://github.com/orca-raven/svarog-server-management
 After=network.target
 
 [Service]
