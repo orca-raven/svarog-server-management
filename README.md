@@ -70,14 +70,20 @@ npm start
 
 ## Автоматическая установка (Linux/macOS)
 
-⚠️ **Важно**: Для работы автоустановщика репозиторий должен быть публичным! 
-См. инструкции в файле `MAKE_PUBLIC_INSTRUCTIONS.md`
-
-Для автоматической установки и настройки в качестве системной службы используйте:
-
+### Быстрая установка одной командой:
 ```bash
 curl -sSL https://raw.githubusercontent.com/orca-raven/svarog-server-management/master/install.py | python3
 ```
+
+### Альтернативный способ для macOS:
+```bash
+# Скачать файл и запустить (рекомендуется для macOS)
+curl -sSL -o install_svarog.py https://raw.githubusercontent.com/orca-raven/svarog-server-management/master/install.py
+python3 install_svarog.py
+rm install_svarog.py
+```
+
+📖 **Подробные инструкции для macOS**: см. файл `MACOS_INSTALL_GUIDE.md`
 
 ### Поддерживаемые операционные системы:
 - **Linux**: Ubuntu, Debian, CentOS, RHEL, Fedora (с systemd)
