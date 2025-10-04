@@ -33,7 +33,7 @@ class SvarogInstaller:
         self.service_name = "svarog-server"
         self.port = None
         self.github_repo = "orca-raven/svarog-server-management"
-        self.branch = "main"
+        self.branch = "master"
         
     def log(self, message, level="INFO"):
         """Логирование с временной меткой"""
