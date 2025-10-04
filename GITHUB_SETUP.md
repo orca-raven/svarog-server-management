@@ -29,8 +29,8 @@ git push -u origin master
 ### 4. Создание release (опционально)
 1. На странице репозитория нажмите "Releases"
 2. Нажмите "Create a new release"
-3. Tag version: `v1.0.3`
-4. Release title: `Svarog v1.0.3 - Initial Release`
+3. Tag version: `v1.0.6`
+4. Release title: `Svarog v1.0.6 - Stable Release`
 5. Описание:
    ```
    🎉 Первый релиз системы управления серверами Svarog!
