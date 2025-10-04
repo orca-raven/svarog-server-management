@@ -69,7 +69,7 @@ npm start
 Для автоматической установки и настройки в качестве системной службы используйте:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/svarog-server-management/main/install.py | python3
+curl -sSL https://raw.githubusercontent.com/renezinger/svarog-server-management/main/install.py | python3
 ```
 
 ## Структура проекта

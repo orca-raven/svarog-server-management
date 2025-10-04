@@ -22,7 +22,7 @@ class SvarogInstaller:
         self.install_dir = "/opt/svarog" if self.system == "linux" else "C:\\Program Files\\Svarog"
         self.service_name = "svarog-server"
         self.port = None
-        self.github_repo = "YOUR_USERNAME/svarog-server-management"  # Замените на реальный репозиторий
+        self.github_repo = "renezinger/svarog-server-management"
         self.branch = "main"
         
     def log(self, message, level="INFO"):
