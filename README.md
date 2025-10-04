@@ -64,13 +64,18 @@ npm run dev
 npm start
 ```
 
-## Автоматическая установка (Linux)
+## Автоматическая установка (Linux/macOS)
 
 Для автоматической установки и настройки в качестве системной службы используйте:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/orca-raven/svarog-server-management/main/install.py | python3
 ```
+
+### Поддерживаемые операционные системы:
+- **Linux**: Ubuntu, Debian, CentOS, RHEL, Fedora (с systemd)
+- **macOS**: версии с Homebrew (с launchd) 
+- **Windows**: ручная установка
 
 ## Структура проекта
 
@@ -134,6 +139,11 @@ svarog-server-management/
 - SQLite 3.0+
 - 100MB свободного места
 - Порт 3000 (или любой другой свободный)
+
+### Для автоматической установки:
+- **Linux**: sudo права, curl, systemd
+- **macOS**: sudo права, curl, возможность установки Homebrew
+- **Windows**: Node.js должен быть установлен заранее
 
 ## Безопасность
 

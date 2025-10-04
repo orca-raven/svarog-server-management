@@ -1,6 +1,6 @@
 {
   "name": "svarog-server-management",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Svarog - система управления серверами, АРМ и виртуальными машинами",
   "main": "server.js",
   "scripts": {

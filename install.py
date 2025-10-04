@@ -19,7 +19,17 @@ from pathlib import Path
 class SvarogInstaller:
     def __init__(self):
         self.system = platform.system().lower()
-        self.install_dir = "/opt/svarog" if self.system == "linux" else "C:\\Program Files\\Svarog"
+        if self.system == "darwin":
+            self.system = "macos"
+        
+        # Определяем директорию установки в зависимости от ОС
+        if self.system == "linux":
+            self.install_dir = "/opt/svarog"
+        elif self.system == "macos":
+            self.install_dir = "/usr/local/svarog"
+        else:
+            self.install_dir = "C:\\Program Files\\Svarog"
+            
         self.service_name = "svarog-server"
         self.port = None
         self.github_repo = "orca-raven/svarog-server-management"
@@ -34,7 +44,7 @@ class SvarogInstaller:
         """Проверка операционной системы"""
         self.log(f"Обнаружена операционная система: {platform.platform()}")
         
-        if self.system not in ["linux", "windows"]:
+        if self.system not in ["linux", "windows", "macos"]:
             self.log("Неподдерживаемая операционная система", "ERROR")
             sys.exit(1)
             
@@ -120,6 +130,28 @@ class SvarogInstaller:
                 self.log(f"Ошибка установки Node.js: {e}", "ERROR")
                 return False
                 
+        elif self.system == "macos":
+            try:
+                # Проверяем наличие Homebrew
+                if shutil.which('brew'):
+                    self.log("Установка Node.js через Homebrew...")
+                    subprocess.run(['brew', 'install', 'node'], check=True)
+                    return True
+                else:
+                    self.log("Homebrew не найден. Устанавливаем Homebrew...")
+                    # Установка Homebrew
+                    install_brew_cmd = '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+                    subprocess.run(install_brew_cmd, shell=True, check=True)
+                    
+                    # Установка Node.js через Homebrew
+                    subprocess.run(['brew', 'install', 'node'], check=True)
+                    return True
+                    
+            except subprocess.CalledProcessError as e:
+                self.log(f"Ошибка установки Node.js на macOS: {e}", "ERROR")
+                self.log("Пожалуйста, установите Node.js вручную с https://nodejs.org/", "ERROR")
+                return False
+                
         elif self.system == "windows":
             self.log("Для Windows пожалуйста установите Node.js вручную с https://nodejs.org/", "ERROR")
             return False
@@ -130,7 +162,11 @@ class SvarogInstaller:
         
         # URL для скачивания архива
         download_url = f"https://github.com/{self.github_repo}/archive/refs/heads/{self.branch}.zip"
-        temp_dir = "/tmp/svarog_install" if self.system == "linux" else "C:\\temp\\svarog_install"
+        
+        if self.system in ["linux", "macos"]:
+            temp_dir = "/tmp/svarog_install"
+        else:
+            temp_dir = "C:\\temp\\svarog_install"
         
         try:
             # Создаем временную директорию
@@ -158,7 +194,7 @@ class SvarogInstaller:
             source_dir = os.path.join(temp_dir, extracted_dirs[0])
             
             # Создаем целевую директорию
-            if self.system == "linux":
+            if self.system in ["linux", "macos"]:
                 subprocess.run(['sudo', 'mkdir', '-p', self.install_dir], check=True)
                 subprocess.run(['sudo', 'cp', '-r', f"{source_dir}/.", self.install_dir], check=True)
                 subprocess.run(['sudo', 'chown', '-R', f"{os.getenv('USER')}:{os.getenv('USER')}", 
@@ -232,11 +268,17 @@ class SvarogInstaller:
             self.log(f"Ошибка настройки порта: {e}", "ERROR")
             return False
             
+    def create_service(self):
+        """Создание службы для автозапуска"""
+        if self.system == "linux":
+            return self.create_systemd_service()
+        elif self.system == "macos":
+            return self.create_launchd_service()
+        else:
+            return True  # Windows пока без службы
+            
     def create_systemd_service(self):
         """Создание systemd службы для Linux"""
-        if self.system != "linux":
-            return True
-            
         self.log("Создание systemd службы...")
         
         service_content = f"""[Unit]
@@ -284,6 +326,66 @@ WantedBy=multi-user.target
             self.log(f"Ошибка создания службы: {e}", "ERROR")
             return False
             
+    def create_launchd_service(self):
+        """Создание launchd службы для macOS"""
+        self.log("Создание launchd службы...")
+        
+        # Определяем пути для node
+        node_path = shutil.which('node') or '/usr/local/bin/node'
+        
+        plist_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.svarog.server</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>{node_path}</string>
+        <string>server.js</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>{self.install_dir}</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>NODE_ENV</key>
+        <string>production</string>
+        <key>PORT</key>
+        <string>{self.port}</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/usr/local/var/log/svarog.log</string>
+    <key>StandardErrorPath</key>
+    <string>/usr/local/var/log/svarog.error.log</string>
+</dict>
+</plist>
+"""
+        
+        plist_path = f"/Library/LaunchDaemons/com.svarog.server.plist"
+        
+        try:
+            # Создаем директорию для логов
+            subprocess.run(['sudo', 'mkdir', '-p', '/usr/local/var/log'], check=True)
+            
+            # Создаем plist файл
+            with open('/tmp/svarog.plist', 'w') as f:
+                f.write(plist_content)
+                
+            subprocess.run(['sudo', 'mv', '/tmp/svarog.plist', plist_path], check=True)
+            subprocess.run(['sudo', 'chown', 'root:wheel', plist_path], check=True)
+            subprocess.run(['sudo', 'chmod', '644', plist_path], check=True)
+            
+            self.log(f"Служба launchd создана: {plist_path}")
+            return True
+            
+        except subprocess.CalledProcessError as e:
+            self.log(f"Ошибка создания launchd службы: {e}", "ERROR")
+            return False
+            
     def start_service(self):
         """Запуск службы"""
         self.log("Запуск службы...")
@@ -302,6 +404,23 @@ WantedBy=multi-user.target
                     return True
                 else:
                     self.log("Служба не запустилась", "ERROR")
+                    self.show_service_logs()
+                    return False
+                    
+            elif self.system == "macos":
+                subprocess.run(['sudo', 'launchctl', 'load', '/Library/LaunchDaemons/com.svarog.server.plist'], check=True)
+                subprocess.run(['sudo', 'launchctl', 'start', 'com.svarog.server'], check=True)
+                
+                # Проверяем статус
+                time.sleep(3)
+                result = subprocess.run(['sudo', 'launchctl', 'list', 'com.svarog.server'], 
+                                      capture_output=True, text=True)
+                
+                if result.returncode == 0:
+                    self.log("Служба launchd запущена успешно")
+                    return True
+                else:
+                    self.log("Служба launchd не запустилась", "ERROR")
                     self.show_service_logs()
                     return False
                     
@@ -325,6 +444,25 @@ WantedBy=multi-user.target
                 result = subprocess.run(['sudo', 'journalctl', '-u', self.service_name, '-n', '20'], 
                                       capture_output=True, text=True)
                 print(result.stdout)
+            except:
+                pass
+        elif self.system == "macos":
+            try:
+                self.log("Последние логи службы:")
+                # Показываем логи из файлов
+                try:
+                    with open('/usr/local/var/log/svarog.log', 'r') as f:
+                        lines = f.readlines()
+                        print(''.join(lines[-20:]))  # Последние 20 строк
+                except FileNotFoundError:
+                    pass
+                    
+                try:
+                    with open('/usr/local/var/log/svarog.error.log', 'r') as f:
+                        lines = f.readlines()
+                        print(''.join(lines[-20:]))  # Последние 20 строк
+                except FileNotFoundError:
+                    pass
             except:
                 pass
                 
@@ -395,8 +533,8 @@ WantedBy=multi-user.target
         if not self.configure_port():
             return False
             
-        # 8. Создание службы (только для Linux)
-        if not self.create_systemd_service():
+        # 8. Создание службы (Linux и macOS)
+        if not self.create_service():
             return False
             
         # 9. Запуск службы
@@ -424,6 +562,16 @@ WantedBy=multi-user.target
             self.log(f"   sudo systemctl restart {self.service_name}", "SUCCESS")
             self.log(f"   sudo systemctl status {self.service_name}", "SUCCESS")
             self.log(f"📋 Логи службы: sudo journalctl -u {self.service_name} -f", "SUCCESS")
+            
+        elif self.system == "macos":
+            self.log(f"⚙️  Управление службой:", "SUCCESS")
+            self.log(f"   sudo launchctl start com.svarog.server", "SUCCESS")
+            self.log(f"   sudo launchctl stop com.svarog.server", "SUCCESS")
+            self.log(f"   sudo launchctl unload /Library/LaunchDaemons/com.svarog.server.plist", "SUCCESS")
+            self.log(f"   sudo launchctl load /Library/LaunchDaemons/com.svarog.server.plist", "SUCCESS")
+            self.log(f"📋 Логи службы:", "SUCCESS")
+            self.log(f"   tail -f /usr/local/var/log/svarog.log", "SUCCESS")
+            self.log(f"   tail -f /usr/local/var/log/svarog.error.log", "SUCCESS")
             
         self.log("", "SUCCESS")
         self.log("Система готова к использованию! 🚀", "SUCCESS")
